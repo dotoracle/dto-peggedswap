@@ -6,8 +6,8 @@ import './libraries/SafeMath.sol';
 contract DTOPeggedSwapERC20 is IDTOPeggedSwapERC20 {
     using SafeMath for uint;
 
-    string public constant override name = 'Uniswap V2';
-    string public constant override symbol = 'UNI-V2';
+    string public constant override name = 'DTOPeggedSwap';
+    string public constant override symbol = 'DTOPS';
     uint8 public constant override decimals = 18;
     uint  public override totalSupply;
     mapping(address => uint) override public balanceOf;
