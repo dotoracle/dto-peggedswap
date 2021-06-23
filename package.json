@@ -44,13 +44,7 @@
     "truffle-flattener": "^1.5.0"
   },
   "scripts": {
-    "lint": "yarn prettier ./test/*.ts --check",
-    "lint:fix": "yarn prettier ./test/*.ts --write",
-    "clean": "rimraf ./build/",
-    "precompile": "yarn clean",
-    "pretest": "yarn compile",
-    "test": "mocha",
-    "prepublishOnly": "yarn test",
+    "test": "npx hardhat test",
     "compile": "npx hardhat compile"
   },
   "license": "GPL-3.0-or-later"

@@ -334,7 +334,7 @@ contract DTOPeggedSwapRouter is IDTOPeggedSwapRouter {
         TransferHelper.safeTransferFrom(
             path[0], msg.sender, DTOPeggedSwapLibrary.pairFor(factory, path[0], path[1]), amountIn
         );
-        uint balanceBefore = IERC20(path[path.length - 1]).balanceOf(to);
+        //uint balanceBefore = IERC20(path[path.length - 1]).balanceOf(to);
         _swapSupportingFeeOnTransferTokens(path, to);
     }
     function swapExactETHForTokensSupportingFeeOnTransferTokens(
@@ -352,7 +352,7 @@ contract DTOPeggedSwapRouter is IDTOPeggedSwapRouter {
         uint amountIn = msg.value;
         IWETH(WETH).deposit{value: amountIn}();
         assert(IWETH(WETH).transfer(DTOPeggedSwapLibrary.pairFor(factory, path[0], path[1]), amountIn));
-        uint balanceBefore = IERC20(path[path.length - 1]).balanceOf(to);
+        //uint balanceBefore = IERC20(path[path.length - 1]).balanceOf(to);
         _swapSupportingFeeOnTransferTokens(path, to);
     }
     function swapExactTokensForETHSupportingFeeOnTransferTokens(

@@ -57,7 +57,7 @@ contract DTOPeggedSwapPair is IDTOPeggedSwapPair, DTOPeggedSwapERC20 {
     function _update() internal {
         reserve0 = IERC20(token0).balanceOf(address(this));
         reserve1 = IERC20(token1).balanceOf(address(this));
-        emit Sync(reserve0, reserve0);
+        emit Sync(reserve0, reserve1);
     }
 
     function computeLiquidityUnit(uint256 _reserve0, uint256 _reserve1) public view returns (uint256) {
@@ -79,7 +79,12 @@ contract DTOPeggedSwapPair is IDTOPeggedSwapPair, DTOPeggedSwapERC20 {
         uint amount1 = balance1.sub(_reserve1);
         uint256 addedLiquidityUnit = computeLiquidityUnit(amount0, amount1);
 
-        liquidity = addedLiquidityUnit.mul(totalSupply).div(reserveLiquidityUnit);
+        if (totalSupply > 0) {
+            liquidity = addedLiquidityUnit.mul(totalSupply).div(reserveLiquidityUnit);
+        } else {
+            uint8 biggerDecimals = decimals0 > decimals1? decimals0:decimals1;
+            liquidity = addedLiquidityUnit.mul(1e18).div(10**biggerDecimals);
+        }
 
         _mint(to, liquidity);
 
@@ -97,8 +102,8 @@ contract DTOPeggedSwapPair is IDTOPeggedSwapPair, DTOPeggedSwapERC20 {
         uint256 liquidity = balanceOf[address(this)];
         uint256 _totalSupply = totalSupply;
 
-        amount0 = liquidity.mul(_totalSupply).div(balance0);
-        amount1 = liquidity.mul(_totalSupply).div(balance1);
+        amount0 = liquidity.mul(balance0).div(_totalSupply);
+        amount1 = liquidity.mul(balance1).div(_totalSupply);
 
         _burn(address(this), liquidity);
         _safeTransfer(_token0, to, amount0);
@@ -128,9 +133,10 @@ contract DTOPeggedSwapPair is IDTOPeggedSwapPair, DTOPeggedSwapERC20 {
         uint amount0In = balance0 > _reserve0 - amount0Out ? balance0 - (_reserve0 - amount0Out) : 0;
         uint amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
         require(amount0In > 0 || amount1In > 0, 'DTOPeggedSwap: INSUFFICIENT_INPUT_AMOUNT');
+
         { // scope for reserve{0,1}Adjusted, avoids stack too deep errors
-            uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3));
-            uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3));
+            uint balance0Adjusted = balance0.sub(amount0In.mul(3).div(1000));   //minus 0.3% fee
+            uint balance1Adjusted = balance1.sub(amount1In.mul(3).div(1000));   //minus 0.3% fee
             require(computeLiquidityUnit(balance0Adjusted, balance1Adjusted) >= computeLiquidityUnit(_reserve0, _reserve1), "DTOPeggedSwap: Swap Liquidity Unit");
         }
 
