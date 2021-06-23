@@ -3,14 +3,14 @@ const { ethers } = require('hardhat')
 const { expandTo18Decimals } = require('./utilities')
 
 
-async function factoryFixture() {
+async function factoryFixture(feeToSetter) {
   const DTOPeggedSwapFactory = await ethers.getContractFactory('DTOPeggedSwapFactory');
-  const DTOPeggedSwapFactoryInstance = await DTOPeggedSwapFactory.deploy("0x0000000000000000000000000000000000000000")
+  const DTOPeggedSwapFactoryInstance = await DTOPeggedSwapFactory.deploy(feeToSetter? feeToSetter: "0x0000000000000000000000000000000000000000")
   return await DTOPeggedSwapFactoryInstance.deployed()
 }
 
-async function pairFixture() {
-  const factory = await factoryFixture()
+async function pairFixture(feeToSetter) {
+  const factory = await factoryFixture(feeToSetter)
 
   const ERC20 = await ethers.getContractFactory('ERC20')
   const DTOPeggedSwapPair = await ethers.getContractFactory('DTOPeggedSwapPair')
@@ -33,5 +33,6 @@ async function pairFixture() {
 }
 
 module.exports = {
-  pairFixture
+  pairFixture,
+  factoryFixture
 }

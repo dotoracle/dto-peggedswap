@@ -87,5 +87,6 @@ async function mineBlock(provider, timestamp) {
 
 module.exports = {
   expandTo18Decimals,
-  mineBlock
+  mineBlock,
+  getCreate2Address
 }
