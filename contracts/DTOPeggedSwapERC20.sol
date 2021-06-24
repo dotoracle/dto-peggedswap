@@ -2,8 +2,9 @@ pragma solidity >=0.5.16;
 
 import './interfaces/IDTOPeggedSwapERC20.sol';
 import './libraries/SafeMath.sol';
+import './ChainIdHolding.sol';
 
-contract DTOPeggedSwapERC20 is IDTOPeggedSwapERC20 {
+contract DTOPeggedSwapERC20 is IDTOPeggedSwapERC20, ChainIdHolding {
     using SafeMath for uint;
 
     string public constant override name = 'DTOPeggedSwap';
@@ -19,10 +20,6 @@ contract DTOPeggedSwapERC20 is IDTOPeggedSwapERC20 {
     mapping(address => uint) public override nonces;
 
     constructor() public {
-        uint chainId;
-        assembly {
-            chainId := chainid()
-        }
         DOMAIN_SEPARATOR = keccak256(
             abi.encode(
                 keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)'),

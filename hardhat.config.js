@@ -140,6 +140,9 @@ module.exports = {
         deployer: {
           default: 0,
         },
+        feeToSetter: {
+          default: 0,
+        },
         protocolOwner: {
           default: 1,
         },
@@ -154,13 +157,6 @@ module.exports = {
         },
         user3: {
           default: 5,
-        },
-        trustedForwarder: {
-          default: 7, // Account 8
-          1: '0x1337c0d31337c0D31337C0d31337c0d31337C0d3', // mainnet
-          3: '0x1337c0d31337c0D31337C0d31337c0d31337C0d3', // ropsten
-          4: '0x1337c0d31337c0D31337C0d31337c0d31337C0d3', // rinkeby
-          42: '0x1337c0d31337c0D31337C0d31337c0d31337C0d3', // kovan
         }
     }
 };

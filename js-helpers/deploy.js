@@ -56,8 +56,22 @@ const chainNameById = (chainId) => {
   }
 };
 
-const supportedChainIds = [1, 3, 4, 42, 31337, 56, 97, 1287, 4002, 80001, 43114, 89]
-const approvers = ["0x51DA78da1758B6F5D5320BD7Ba7DCeb9B3472e9C", "0x117cA9A7030E36AA0A55D0Da61261025c0578eD1"]
+//wrapped native token
+const WETH = (chainId) => {
+  switch (parseInt(chainId, 10)) {
+    case 1: return '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+    case 42: return '0xd0a1e359811322d97991e03f863a0c30c2cf029c';
+    case 56: return '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
+    case 97: return '0x094616F0BdFB0b526bD735Bf66Eca0Ad254ca81F';
+    case 1287: return 'MoonBeamTestnet';
+    case 4002: return 'FantomTestnet';
+    case 80001: return 'MumbaiTestnet';
+    case 43113: return 'FujiTestnet';
+    case 89: return 'TomoTestnet';
+    case 31337: return '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
+    default: return 'Unknown';
+  }
+}
 
 const blockTimeFromDate = (dateStr) => {
   return Date.parse(dateStr) / 1000;
@@ -119,110 +133,7 @@ const getActualTxGasCost = async (txData) => {
 };
 
 const presets = {
-  // ChargedParticles: {
-  //   tempLockExpiryBlocks: toBN('5760'), // 1 Day == 86400 / 15
-  //   maxDeposits: [ // Temporary limit; remove after launch proves successful
-  //     {assetTokenId: 'Aave.v2.dai', amount: toWei('10000')}, // DAI
-  //   ]
-  // },
-  // Lepton: {
-  //   maxMintPerTx: toBN('25'),
-
-  //   // V2 Type Definitions
-  //   types: [
-  //     {
-  //       name        : 'Electron Neutrino',
-  //       tokenUri    : 'https://gateway.pinata.cloud/ipfs/QmcWuHx4MgywyEMzsqT9J3boJu1gk7GdtAMQ1pyQYRR3XS',
-  //       price       : {1: toWei('0.3'), 42: toWei('0.0000003'), 31337: toWei('0.000000003')},
-  //       supply      : {1: toBN('721'), 42: toBN('40'), 31337: toBN('40')},
-  //       multiplier  : toBN('110'),  // 1.1%
-  //       bonus       : toBN('0'),
-  //     },
-  //     {
-  //       name        : 'Muon Neutrino',
-  //       tokenUri    : 'https://gateway.pinata.cloud/ipfs/QmccGhGhvi37QScB4u2VmuVwENtEsMpx6hAKUqu3x3nU9V',
-  //       price       : {1: toWei('0.9'), 42: toWei('0.0000009'), 31337: toWei('0.000000009')},
-  //       supply      : {1: toBN('401'), 42: toBN('20'), 31337: toBN('20')},
-  //       multiplier  : toBN('130'),  // 1.3%
-  //       bonus       : toBN('1'),
-  //     },
-  //     {
-  //       name        : 'Tau Neutrino',
-  //       tokenUri    : 'https://gateway.pinata.cloud/ipfs/Qma2ZPnCM95AYZ1wPxZdDVvRiS114Svrw2J632ZpLiX7JV',
-  //       price       : {1: toWei('1.7'), 42: toWei('0.0000017'), 31337: toWei('0.000000017')},
-  //       supply      : {1: toBN('301'), 42: toBN('12'), 31337: toBN('12')},
-  //       multiplier  : toBN('150'),  // 1.5%
-  //       bonus       : toBN('2'),
-  //     },
-  //     {
-  //       name        : 'Electron',
-  //       tokenUri    : 'https://gateway.pinata.cloud/ipfs/QmNRKJsUwqEE9zYK6sEND8HDGa4cHFkkC2ntjQA5bFL6jJ',
-  //       price       : {1: toWei('2.9'), 42: toWei('0.000029'), 31337: toWei('0.00000029')},
-  //       supply      : {1: toBN('201'), 42: toBN('8'), 31337: toBN('8')},
-  //       multiplier  : toBN('180'),  // 1.8%
-  //       bonus       : toBN('4'),
-  //     },
-  //     {
-  //       name        : 'Muon',
-  //       tokenUri    : 'https://gateway.pinata.cloud/ipfs/QmWiH5F9yPp7yRzcqocmQKuhrA3KVY9fGJZxD9UKBDu5wr',
-  //       price       : {1: toWei('5.1'), 42: toWei('0.000051'), 31337: toWei('0.00000051')},
-  //       supply      : {1: toBN('88'), 42: toBN('5'), 31337: toBN('5')},
-  //       multiplier  : toBN('230'),  // 2.3%
-  //       bonus       : toBN('8'),
-  //     },
-  //     {
-  //       name        : 'Tau',
-  //       tokenUri    : 'https://gateway.pinata.cloud/ipfs/QmUkCXgyguBSxnGRtfBAvofAkyhFbRCwS7HPaoytAZvemt',
-  //       price       : {1: toWei('21'), 42: toWei('0.00021'), 31337: toWei('0.0000021')},
-  //       supply      : {1: toBN('21'), 42: toBN('2'), 31337: toBN('2')},
-  //       multiplier  : toBN('510'),  // 5.1%
-  //       bonus       : toBN('16'),
-  //     },
-  //   ]
-  // },
-  // Ion: {
-  //   universeMaxSupply: toWei('40000000'), // 40% of 100 Million (Community Liquidity Mining Portion)
-  //   rewardsForAssetTokens: [
-  //     {assetTokenId: 'Aave.v2.dai', multiplier: '5000'}, // DAI (50% of Interest in Ion)
-  //   ],
-  //   timelocks: [
-  //     {
-  //       receiver: '0x90F79bf6EB2c4f870365E785982E1f101E93b906',  // Testing - Account 3
-  //       portions: [
-  //         {amount: weiPerEth.mul('1000'), releaseDate: blockTimeFromDate('27 Dec 2021 00:00:00 GMT')},
-  //         {amount: weiPerEth.mul('1000'), releaseDate: blockTimeFromDate('28 Dec 2021 00:00:00 GMT')},
-  //         {amount: weiPerEth.mul('1000'), releaseDate: blockTimeFromDate('29 Dec 2021 00:00:00 GMT')},
-  //       ]
-  //     },
-  //     {
-  //       receiver: '0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65',  // Testing - Account 4
-  //       portions: [
-  //         {amount: weiPerEth.mul('5000'), releaseDate: blockTimeFromDate('27 Dec 2021 00:00:00 GMT')},
-  //         {amount: weiPerEth.mul('5000'), releaseDate: blockTimeFromDate('28 Dec 2021 00:00:00 GMT')},
-  //         {amount: weiPerEth.mul('5000'), releaseDate: blockTimeFromDate('29 Dec 2021 00:00:00 GMT')},
-  //       ]
-  //     },
-  //   ],
-  // },
-  // Aave: {
-  //   referralCode: {
-  //     1: '',
-  //     42: '',
-  //     31337: '',
-  //   },
-  //   v2: {
-  //     dai: {
-  //       1: '0x6B175474E89094C44Da98b954EedeAC495271d0F', // mainnet
-  //       42: '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD', // kovan
-  //       31337: '0x6B175474E89094C44Da98b954EedeAC495271d0F', // Hardhat - Forked Mainnet
-  //     },
-  //     lendingPoolProvider: {
-  //       1: '0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5', // mainnet
-  //       42: '0x652B2937Efd0B5beA1c8d54293FC1289672AFC6b', // kovan
-  //       31337: '0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5', // Hardhat - Forked Mainnet
-  //     }
-  //   }
-  // }
+ 
 };
 
 
@@ -241,6 +152,5 @@ module.exports = {
   toEth,
   toBN,
   toStr,
-  supportedChainIds,
-  approvers
+  WETH
 };

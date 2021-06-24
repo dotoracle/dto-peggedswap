@@ -10,13 +10,14 @@ import "./libraries/TransferHelper.sol";
 import "./libraries/DTOPeggedSwapLibrary.sol";
 import "./interfaces/IDTOPeggedSwapFactory.sol";
 import "./interfaces/IDTOPeggedSwapPair.sol";
+import './ChainIdHolding.sol';
 interface IWETH {
     function deposit() external payable;
     function transfer(address to, uint value) external returns (bool);
     function withdraw(uint) external;
 }
 
-contract DTOPeggedSwapRouter is IDTOPeggedSwapRouter {
+contract DTOPeggedSwapRouter is IDTOPeggedSwapRouter, ChainIdHolding {
     using SafeMath for uint;
 
     address public immutable override factory;

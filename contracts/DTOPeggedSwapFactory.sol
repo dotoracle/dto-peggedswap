@@ -2,8 +2,9 @@ pragma solidity >=0.5.16;
 
 import './interfaces/IDTOPeggedSwapFactory.sol';
 import './DTOPeggedSwapPair.sol';
+import './ChainIdHolding.sol';
 
-contract DTOPeggedSwapFactory is IDTOPeggedSwapFactory {
+contract DTOPeggedSwapFactory is IDTOPeggedSwapFactory, ChainIdHolding {
     address public override feeTo;
     address public override feeToSetter;
 
