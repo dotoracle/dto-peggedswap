@@ -19,6 +19,10 @@ contract DTOPeggedSwapFactory is IDTOPeggedSwapFactory, ChainIdHolding {
         return allPairs.length;
     }
 
+    function getPairInitCodeHash() external view returns (bytes32) {
+        return keccak256(type(DTOPeggedSwapPair).creationCode);
+    }
+
     function createPair(address tokenA, address tokenB) external override returns (address pair) {
         require(tokenA != tokenB, 'DTOPeggedSwap: IDENTICAL_ADDRESSES');
         (address token0, address token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
@@ -44,5 +48,11 @@ contract DTOPeggedSwapFactory is IDTOPeggedSwapFactory, ChainIdHolding {
     function setFeeToSetter(address _feeToSetter) external override {
         require(msg.sender == feeToSetter, 'DTOPeggedSwap: FORBIDDEN');
         feeToSetter = _feeToSetter;
+    }
+
+    function sortTokens(address tokenA, address tokenB) external pure returns (address token0, address token1) {
+        require(tokenA != tokenB, 'DTOPeggedSwapFactory: IDENTICAL_ADDRESSES');
+        (token0, token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
+        require(token0 != address(0), 'DTOPeggedSwapFactory: ZERO_ADDRESS');
     }
 }

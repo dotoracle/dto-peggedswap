@@ -24,7 +24,7 @@ describe("DTOPeggedERC20", async function () {
 
   let token
   beforeEach(async () => {
-    const ERC20 = await ethers.getContractFactory('ERC20')
+    const ERC20 = await ethers.getContractFactory('ERC20Test')
     const tokenInstance = await ERC20.deploy(TOTAL_SUPPLY)
     token = await tokenInstance.deployed()
   })

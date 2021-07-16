@@ -12,7 +12,7 @@ async function factoryFixture(feeToSetter) {
 async function pairFixture(feeToSetter) {
   const factory = await factoryFixture(feeToSetter)
 
-  const ERC20 = await ethers.getContractFactory('ERC20')
+  const ERC20 = await ethers.getContractFactory('ERC20Test')
   const DTOPeggedSwapPair = await ethers.getContractFactory('DTOPeggedSwapPair')
 
   const tokenAInstance = await ERC20.deploy(expandTo18Decimals(10000))
@@ -32,7 +32,20 @@ async function pairFixture(feeToSetter) {
   return { factory, token0, token1, pair }
 }
 
+async function tokenFixture() {
+  const ERC20 = await ethers.getContractFactory('ERC20Test')
+
+  const tokenAInstance = await ERC20.deploy(expandTo18Decimals(10000))
+  const tokenBInstance = await ERC20.deploy(expandTo18Decimals(10000))
+
+  const tokenA = await tokenAInstance.deployed()
+  const tokenB = await tokenBInstance.deployed()
+
+  return { tokenA, tokenB }
+} 
+
 module.exports = {
   pairFixture,
-  factoryFixture
+  factoryFixture,
+  tokenFixture
 }

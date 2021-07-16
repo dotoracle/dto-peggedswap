@@ -207,7 +207,7 @@ describe("DTOPeggedSwapPair", async function () {
     it("Deployment should assign the total supply of tokens to the owner", async function () {
         const [owner] = await ethers.getSigners();
 
-        const ERC20 = await ethers.getContractFactory("ERC20");
+        const ERC20 = await ethers.getContractFactory("ERC20Test");
 
         const hardhatToken = await ERC20.deploy(BigNumber.from('1000000000000000000000000000'));
 
