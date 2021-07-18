@@ -44,8 +44,8 @@ library DTOPeggedSwapLibrary {
     // given an input amount of an asset and pair reserves, returns the maximum output amount of the other asset
     function getAmountOut(uint amountIn, uint8 decimalsIn, uint8 decimalsOut, uint256 reserveOut) internal pure returns (uint amountOut) {
         require(amountIn > 0, 'DTOPeggedSwapLibrary: INSUFFICIENT_INPUT_AMOUNT');
-        uint amountInWithFee = amountIn.mul(997).div(1000);
-        amountOut = quote(amountInWithFee, decimalsIn, decimalsOut);
+        amountOut = quote(amountIn, decimalsIn, decimalsOut);
+        amountOut = amountOut.mul(997).div(1000);
         require(amountOut <= reserveOut, "DTOPeggedSwapLibrary: INSUFFICIENT_LIQUIDITY");
     }
 

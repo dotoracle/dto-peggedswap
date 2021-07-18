@@ -45,6 +45,8 @@ module.exports = {
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {
+      blockGasLimit: 32400000,
+      accounts: {mnemonic: "test test test test test test test test test test test junk"}
     },
     kovan: {
       url: `https://kovan.infura.io/v3/${process.env.INFURA_APIKEY}`,
@@ -134,7 +136,7 @@ module.exports = {
   etherscan: {
     // Your API key for Etherscan
     // Obtain one at https://bscscan.com/
-    apiKey: process.env.ETHERSCAN_APIKEY
+    apiKey: process.env.BSC_APIKEY
   },
   namedAccounts: {
         deployer: {

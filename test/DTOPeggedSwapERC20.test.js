@@ -8,15 +8,14 @@ const { ecsign } = require('ethereumjs-util')
 const { expect } = require('chai')
 const parseEther = utils.parseEther
 const formatEther = utils.formatEther
-const { expandTo18Decimals, getApprovalDigest } = require('./shared/utilities')
+const { expandTo18Decimals, getApprovalDigest, pkey } = require('./shared/utilities')
 const { pairFixture } = require('./shared/fixtures');
-const { arrayify } = require("ethers/lib/utils");
+const { arrayify, hexlify } = require("ethers/lib/utils");
 const MaxUint256 = ethers.constants.MaxUint256
 const bigNumberify = BigNumber.from
 const MINIMUM_LIQUIDITY = BigNumber.from(10).pow(3)
-
 const TOTAL_SUPPLY = expandTo18Decimals(10000)
-const TEST_AMOUNT = expandTo18Decimals(10)
+let TEST_AMOUNT = expandTo18Decimals(10)
 
 describe("DTOPeggedERC20", async function () {
   const [owner, other] = await ethers.getSigners();
@@ -98,25 +97,34 @@ describe("DTOPeggedERC20", async function () {
   })
 
   it('permit', async () => {
+    
     const nonce = await token.nonces(owner.address)
     const deadline = MaxUint256
     const digest = await getApprovalDigest(
       token,
       { owner: owner.address, spender: other.address, value: TEST_AMOUNT },
       nonce,
-      deadline
+      deadline,
+      chainId
     )
-    //const { v, r, s } = ecsign(Buffer.from(digest.slice(2), 'hex'), Buffer.from(owner.privateKey.slice(2), 'hex'))
-    // let sig = await owner.signMessage(Buffer.from(digest.slice(2), 'hex'))
-    // sig = sig.slice(2)
-    // let r = `0x${sig.slice(0, 64)}`
-    // let s = `0x${sig.slice(64, 128)}`
-    // let v = `0x${sig.slice(128)}`
-    // v = arrayify(v)[0]
-    // await expect(token.permit(owner.address, other.address, TEST_AMOUNT, deadline, v, r, s))
-    //   .to.emit(token, 'Approval')
-    //   .withArgs(owner.address, other.address, TEST_AMOUNT)
-    // expect(await token.allowance(owner.address, other.address)).to.eq(TEST_AMOUNT)
-    // expect(await token.nonces(owner.address)).to.eq(bigNumberify(1))
+    const messageHashBytes = Buffer.from(digest.slice(2), 'hex')
+    // let flatSig = await owner.signMessage(arrayify(digest));
+    // console.log('messageHashBytes:', messageHashBytes)
+    // console.log('arrayify(digest):', arrayify(digest))
+
+    
+    // // For Solidity, we need the expanded-format of a signature
+    // let sig = ethers.utils.splitSignature(flatSig);
+    // let [v, r, s] = [sig.v, Buffer.from(sig.r.slice(2), 'hex'), Buffer.from(sig.s.slice(2), 'hex')]
+
+    const { v, r, s } = ecsign(messageHashBytes, Buffer.from(pkey.slice(2), 'hex'))
+    //console.log('sig', v, r, s)
+
+    //await token.permit(owner.address, other.address, TEST_AMOUNT, deadline, v, r, s)
+    await expect(token.permit(owner.address, other.address, TEST_AMOUNT, deadline, v, r, s))
+      .to.emit(token, 'Approval')
+      .withArgs(owner.address, other.address, TEST_AMOUNT)
+    expect(await token.allowance(owner.address, other.address)).to.eq(TEST_AMOUNT)
+    expect(await token.nonces(owner.address)).to.eq(bigNumberify(1))
   })
 })

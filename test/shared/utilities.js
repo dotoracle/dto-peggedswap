@@ -13,7 +13,7 @@ function expandTo18Decimals(n) {
   return bigNumberify(n).mul(bigNumberify(10).pow(18))
 }
 
-function getDomainSeparator(name, tokenAddress) {
+function getDomainSeparator(name, tokenAddress, chainId) {
   return keccak256(
     defaultAbiCoder.encode(
       ['bytes32', 'bytes32', 'bytes32', 'uint256', 'address'],
@@ -21,7 +21,7 @@ function getDomainSeparator(name, tokenAddress) {
         keccak256(toUtf8Bytes('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)')),
         keccak256(toUtf8Bytes(name)),
         keccak256(toUtf8Bytes('1')),
-        1,
+        chainId,
         tokenAddress
       ]
     )
@@ -48,10 +48,11 @@ async function getApprovalDigest(
   token,
   approve,
   nonce,
-  deadline
+  deadline,
+  chainId
 ){
   const name = await token.name()
-  const DOMAIN_SEPARATOR = getDomainSeparator(name, token.address)
+  const DOMAIN_SEPARATOR = getDomainSeparator(name, token.address, chainId)
   return keccak256(
     solidityPack(
       ['bytes1', 'bytes1', 'bytes32', 'bytes32'],
@@ -89,5 +90,6 @@ module.exports = {
   expandTo18Decimals,
   mineBlock,
   getCreate2Address,
-  getApprovalDigest
+  getApprovalDigest,
+  pkey: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
 }

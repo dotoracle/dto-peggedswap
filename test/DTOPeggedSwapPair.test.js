@@ -213,7 +213,7 @@ describe("DTOPeggedSwapPair", async function () {
 
         const ownerBalance = await hardhatToken.balanceOf(owner.address);
         expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
-    });
+    });  
 });
 
 

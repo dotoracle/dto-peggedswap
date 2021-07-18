@@ -50,7 +50,7 @@ module.exports = async (hre) => {
     await router.addLiquidity(
         mock1.address, mock2.address,
         BigNumber.from(10).pow(25), BigNumber.from(10).pow(25),
-        deployer, BigNumber.from(10).pow(20), {gasLimit: 22400000})
+        deployer, BigNumber.from(10).pow(20), {gasLimit: 2400000})
 
     deployData['ERC20MockPair'] = {
         abi: getContractAbi('ERC20Mock'),
