@@ -2,6 +2,7 @@ pragma solidity >=0.6.6;
 import "./SafeMath.sol";
 import "../interfaces/IERC20.sol";
 import "../interfaces/IDTOPeggedSwapPair.sol";
+import "../interfaces/IDTOPeggedSwapFactory.sol";
 
 library DTOPeggedSwapLibrary {
     using SafeMath for uint;
@@ -14,13 +15,15 @@ library DTOPeggedSwapLibrary {
     }
 
     // calculates the CREATE2 address for a pair without making any external calls
-    function pairFor(address factory, address tokenA, address tokenB) internal pure returns (address pair) {
+    function pairFor(address factory, address tokenA, address tokenB) internal view returns (address pair) {
+        pair = IDTOPeggedSwapFactory(factory).getPair(tokenA, tokenB);
+        if (pair != address(0)) return pair;
         (address token0, address token1) = sortTokens(tokenA, tokenB);
         pair = address(uint(keccak256(abi.encodePacked(
                 hex'ff',
                 factory,
                 keccak256(abi.encodePacked(token0, token1)),
-                hex'4bc474950f451485db3736a90b3b84b0148f50fd8bd7af0124f9c66e6936f4d2' // init code hash
+                hex'9344121b30ec7bee03d8c446ef7ef460b0fef6a9c933bc96d845c61fc32484a1' // init code hash
             ))));
     }
 
@@ -45,7 +48,7 @@ library DTOPeggedSwapLibrary {
     function getAmountOut(uint amountIn, uint8 decimalsIn, uint8 decimalsOut, uint256 reserveOut) internal pure returns (uint amountOut) {
         require(amountIn > 0, 'DTOPeggedSwapLibrary: INSUFFICIENT_INPUT_AMOUNT');
         amountOut = quote(amountIn, decimalsIn, decimalsOut);
-        amountOut = amountOut.mul(997).div(1000);
+        amountOut = amountOut.mul(1000 - swapFee()).div(1000);
         require(amountOut <= reserveOut, "DTOPeggedSwapLibrary: INSUFFICIENT_LIQUIDITY");
     }
 
@@ -53,8 +56,12 @@ library DTOPeggedSwapLibrary {
     function getAmountIn(uint amountOut, uint8 decimalsIn, uint8 decimalsOut, uint reserveIn) internal pure returns (uint amountIn) {
         require(amountOut > 0, 'DTOPeggedSwapLibrary: INSUFFICIENT_OUTPUT_AMOUNT');
         uint amountInWithFee = quote(amountOut, decimalsOut, decimalsIn);
-        amountIn = amountInWithFee.mul(1000).div(997);
+        amountIn = amountInWithFee.mul(1000).div(1000 - swapFee());
         amountIn = amountIn.add(1);
         require(reserveIn >= amountIn, 'DTOPeggedSwapLibrary: INSUFFICIENT_LIQUIDITY');
+    }
+
+    function swapFee() internal pure returns (uint256) {
+        return 3;
     }
 }

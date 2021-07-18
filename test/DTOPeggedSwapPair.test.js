@@ -6,7 +6,7 @@ const [BigNumber, getAddress, keccak256, defaultAbiCoder, toUtf8Bytes, solidityP
 const { expect } = require('chai')
 const parseEther = utils.parseEther
 const formatEther = utils.formatEther
-const { expandTo18Decimals, mineBlock } = require('./shared/utilities')
+const { expandTo18Decimals, mineBlock, swapFee } = require('./shared/utilities')
 const { pairFixture } = require('./shared/fixtures')
 const AddressZero = ethers.constants.AddressZero
 const bigNumberify = BigNumber.from
@@ -70,15 +70,8 @@ describe("DTOPeggedSwapPair", async function () {
     }
 
     const swapTestCases = [
-        [1, 5, 10, parseEther('0.997').toString()],
-        [1, 10, 5, parseEther('0.997').toString()],
-
-        // [2, 5, 10, parseEther('1.994').toString()],
-        // [2, 10, 5, parseEther('1.994').toString()],
-
-        // [1, 10, 10, parseEther('0.997').toString()],
-        // [1, 100, 100, parseEther('0.997').toString()],
-        // [1, 1000, 1000, parseEther('0.997').toString()]
+        [1, 5, 10, parseEther(`${1000 - swapFee}`).div(1000).toString()],
+        [1, 10, 5, parseEther(`${1000 - swapFee}`).div(1000).toString()],
     ].map(a => a.map(n => (typeof n === 'string' ? bigNumberify(n) : expandTo18Decimals(n))))
 
     swapTestCases.forEach((swapTestCase, i) => {
@@ -103,10 +96,10 @@ describe("DTOPeggedSwapPair", async function () {
     })
 
     const optimisticTestCases = [
-        ['997000000000000000', 5, 10, 1], // given amountIn, amountOut = floor(amountIn * .997)
-        ['997000000000000000', 10, 5, 1],
-        ['997000000000000000', 5, 5, 1],
-        [1, 5, 5, parseEther('1').mul(1000).div(997).toString()] // given amountOut, amountIn = ceiling(amountOut / .997)
+        [parseEther(`${1000 - swapFee}`).div(1000).toString(), 5, 10, 1], // given amountIn, amountOut = floor(amountIn * (1000 - fee))
+        [parseEther(`${1000 - swapFee}`).div(1000).toString(), 10, 5, 1],
+        [parseEther(`${1000 - swapFee}`).div(1000).toString(), 5, 5, 1],
+        [1, 5, 5, parseEther('1').mul(1000).div(1000 - swapFee).toString()] // given amountOut, amountIn = ceiling(amountOut / (1000 - fee))
     ].map(a => a.map(n => (typeof n === 'string' ? bigNumberify(n) : expandTo18Decimals(n))))
     optimisticTestCases.forEach((optimisticTestCase, i) => {
         it(`optimistic:${i}`, async () => {
@@ -127,7 +120,7 @@ describe("DTOPeggedSwapPair", async function () {
         await addLiquidity(token0Amount, token1Amount)
 
         const swapAmount = expandTo18Decimals(1)
-        const expectedOutputAmount = expandTo18Decimals(1).mul(997).div(1000)
+        const expectedOutputAmount = expandTo18Decimals(1).mul(1000 - swapFee).div(1000)
         await token0.transfer(pair.address, swapAmount)
         await expect(pair.swap(0, expectedOutputAmount, owner.address, '0x'))
             .to.emit(token1, 'Transfer')
@@ -154,7 +147,7 @@ describe("DTOPeggedSwapPair", async function () {
         await addLiquidity(token0Amount, token1Amount)
 
         const swapAmount = expandTo18Decimals(1)
-        const expectedOutputAmount = expandTo18Decimals(1).mul(997).div(1000)
+        const expectedOutputAmount = expandTo18Decimals(1).mul(1000 - swapFee).div(1000)
         await token1.transfer(pair.address, swapAmount)
         await expect(pair.swap(expectedOutputAmount, 0, owner.address, '0x'))
             .to.emit(token0, 'Transfer')

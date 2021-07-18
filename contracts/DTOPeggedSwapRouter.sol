@@ -11,6 +11,7 @@ import "./libraries/DTOPeggedSwapLibrary.sol";
 import "./interfaces/IDTOPeggedSwapFactory.sol";
 import "./interfaces/IDTOPeggedSwapPair.sol";
 import './ChainIdHolding.sol';
+import "./libraries/DTOPeggedSwapLibrary.sol";
 interface IWETH {
     function deposit() external payable;
     function transfer(address to, uint value) external returns (bool);
@@ -24,7 +25,7 @@ contract DTOPeggedSwapRouter is IDTOPeggedSwapRouter, ChainIdHolding {
     address public immutable override WETH;
 
     modifier ensure(uint deadline) {
-        require(deadline >= block.timestamp, 'UniswapV2Router: EXPIRED');
+        require(deadline >= block.timestamp, 'DTOPeggedSwapRouter: EXPIRED');
         _;
     }
 

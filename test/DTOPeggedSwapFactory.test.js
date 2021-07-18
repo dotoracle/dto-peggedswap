@@ -6,7 +6,7 @@ const [BigNumber, getAddress, keccak256, defaultAbiCoder, toUtf8Bytes, solidityP
 const { expect } = require('chai')
 const parseEther = utils.parseEther
 const formatEther = utils.formatEther
-const { expandTo18Decimals, mineBlock, getCreate2Address } = require('./shared/utilities')
+const { expandTo18Decimals, mineBlock, getCreate2Address, swapFee } = require('./shared/utilities')
 const { pairFixture, factoryFixture, tokenFixture } = require('./shared/fixtures')
 const AddressZero = ethers.constants.AddressZero
 const bigNumberify = BigNumber.from
@@ -71,8 +71,9 @@ describe('DTOPeggedSwapFactory', async () => {
 
   it('createPair:gas', async () => {
     const tx = await factory.createPair(...TEST_ADDRESSES)
+    console.log('init code hash', await factory.getPairInitCodeHash())
     const receipt = await tx.wait()
-    expect(receipt.gasUsed).to.eq(1736625)
+    expect(receipt.gasUsed).to.eq(1759497)
   })
 
   it('setFeeTo', async () => {

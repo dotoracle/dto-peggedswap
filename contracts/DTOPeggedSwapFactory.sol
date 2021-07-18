@@ -3,6 +3,7 @@ pragma solidity >=0.5.16;
 import './interfaces/IDTOPeggedSwapFactory.sol';
 import './DTOPeggedSwapPair.sol';
 import './ChainIdHolding.sol';
+import './libraries/DTOPeggedSwapLibrary.sol';
 
 contract DTOPeggedSwapFactory is IDTOPeggedSwapFactory, ChainIdHolding {
     address public override feeTo;
@@ -54,5 +55,9 @@ contract DTOPeggedSwapFactory is IDTOPeggedSwapFactory, ChainIdHolding {
         require(tokenA != tokenB, 'DTOPeggedSwapFactory: IDENTICAL_ADDRESSES');
         (token0, token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
         require(token0 != address(0), 'DTOPeggedSwapFactory: ZERO_ADDRESS');
+    }
+
+    function swapFee() public override view returns (uint256) {
+        return DTOPeggedSwapLibrary.swapFee();
     }
 }

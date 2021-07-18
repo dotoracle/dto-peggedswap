@@ -6,7 +6,7 @@ const [BigNumber, getAddress, keccak256, defaultAbiCoder, toUtf8Bytes, solidityP
 const { expect } = require('chai')
 const parseEther = utils.parseEther
 const formatEther = utils.formatEther
-const { expandTo18Decimals, getApprovalDigest, pkey } = require('./shared/utilities')
+const { expandTo18Decimals, getApprovalDigest, pkey, swapFee } = require('./shared/utilities')
 const { pairFixture } = require('./shared/fixtures')
 const AddressZero = ethers.constants.AddressZero
 const bigNumberify = BigNumber.from
@@ -287,7 +287,7 @@ describe('Pegged Swap Router{}', async () => {
       const token0Amount = expandTo18Decimals(5)
       const token1Amount = expandTo18Decimals(10)
       const swapAmount = expandTo18Decimals(1)
-      const expectedOutputAmount = parseEther('0.997').toString()
+      const expectedOutputAmount = parseEther(`${1000 - swapFee}`).div(1000).toString()
 
       beforeEach(async () => {
         await addLiquidity(token0Amount, token1Amount)
@@ -317,7 +317,7 @@ describe('Pegged Swap Router{}', async () => {
     describe('swapTokensForExactTokens', () => {
       const token0Amount = expandTo18Decimals(5)
       const token1Amount = expandTo18Decimals(10)
-      const expectedSwapAmount = parseEther('1').mul(1000).div(997).add(1).toString()
+      const expectedSwapAmount = parseEther('1').mul(1000).div(1000 - swapFee).add(1).toString()
       const outputAmount = expandTo18Decimals(1)
       beforeEach(async () => {
         await addLiquidity(token0Amount, token1Amount)
@@ -348,7 +348,7 @@ describe('Pegged Swap Router{}', async () => {
       const WETHPartnerAmount = expandTo18Decimals(10)
       const ETHAmount = expandTo18Decimals(5)
       const swapAmount = expandTo18Decimals(1)
-      const expectedOutputAmount = parseEther('0.997')
+      const expectedOutputAmount = parseEther(`${1000 - swapFee}`).div(1000).toString()
 
       beforeEach(async () => {
         await WETHPartner.transfer(WETHPair.address, WETHPartnerAmount)
@@ -394,7 +394,7 @@ describe('Pegged Swap Router{}', async () => {
     describe('swapTokensForExactETH', () => {
       const WETHPartnerAmount = expandTo18Decimals(5)
       const ETHAmount = expandTo18Decimals(10)
-      const expectedSwapAmount = parseEther('1').mul(1000).div(997).add(1).toString()
+      const expectedSwapAmount = parseEther('1').mul(1000).div(1000 - swapFee).add(1).toString()
       const outputAmount = expandTo18Decimals(1)
 
       beforeEach(async () => {
@@ -444,7 +444,7 @@ describe('Pegged Swap Router{}', async () => {
       const WETHPartnerAmount = expandTo18Decimals(5)
       const ETHAmount = expandTo18Decimals(10)
       const swapAmount = expandTo18Decimals(1)
-      const expectedOutputAmount = parseEther('0.997')
+      const expectedOutputAmount = parseEther(`${1000 - swapFee}`).div(1000).toString()
 
       beforeEach(async () => {
         await WETHPartner.transfer(WETHPair.address, WETHPartnerAmount)
@@ -492,7 +492,7 @@ describe('Pegged Swap Router{}', async () => {
     describe('swapETHForExactTokens', () => {
       const WETHPartnerAmount = expandTo18Decimals(10)
       const ETHAmount = expandTo18Decimals(5)
-      const expectedSwapAmount = parseEther('1').mul(1000).div(997).add(1).toString()
+      const expectedSwapAmount = parseEther('1').mul(1000).div(1000 - swapFee).add(1).toString()
       const outputAmount = expandTo18Decimals(1)
 
       beforeEach(async () => {
@@ -657,7 +657,7 @@ describe('Pegged Swap Router{}', async () => {
 
         it('swapExactTokensForTokens', async () => {
           const swapAmount = bigNumberify(10).pow(decimalsToken0)
-          const expectedOutputAmount = bigNumberify(10).pow(decimalsToken1).mul(997).div(1000)
+          const expectedOutputAmount = bigNumberify(10).pow(decimalsToken1).mul(1000 - swapFee).div(1000)
           await expect(
             router.swapExactTokensForTokens(
               swapAmount,
@@ -677,7 +677,7 @@ describe('Pegged Swap Router{}', async () => {
         })
 
         it('swapTokensForExactTokens', async () => {
-          const expectedSwapAmount = bigNumberify(10).pow(decimalsToken0).mul(1000).div(997).add(1).toString()
+          const expectedSwapAmount = bigNumberify(10).pow(decimalsToken0).mul(1000).div(1000 - swapFee).add(1).toString()
           const outputAmount = bigNumberify(10).pow(decimalsToken1)
           await expect(
             router.swapTokensForExactTokens(

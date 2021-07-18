@@ -135,8 +135,9 @@ contract DTOPeggedSwapPair is IDTOPeggedSwapPair, DTOPeggedSwapERC20 {
         require(amount0In > 0 || amount1In > 0, 'DTOPeggedSwap: INSUFFICIENT_INPUT_AMOUNT');
 
         { // scope for reserve{0,1}Adjusted, avoids stack too deep errors
-            uint balance0Adjusted = balance0.sub(amount0In.mul(3).div(1000));   //minus 0.3% fee
-            uint balance1Adjusted = balance1.sub(amount1In.mul(3).div(1000));   //minus 0.3% fee
+            uint256 swapFee = IDTOPeggedSwapFactory(factory).swapFee();
+            uint balance0Adjusted = balance0.sub(amount0In.mul(swapFee).div(1000));   //minusfee
+            uint balance1Adjusted = balance1.sub(amount1In.mul(swapFee).div(1000));   //minus fee
             require(computeLiquidityUnit(balance0Adjusted, balance1Adjusted) >= computeLiquidityUnit(_reserve0, _reserve1), "DTOPeggedSwap: Swap Liquidity Unit");
         }
 
